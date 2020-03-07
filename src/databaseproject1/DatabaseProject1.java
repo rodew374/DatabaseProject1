@@ -25,6 +25,14 @@ public class DatabaseProject1 {
 
             }
 
+            rs = stmt.executeQuery("SELECT * FROM users2");
+            while(rs.next()) {
+                String name = rs.getString("name");
+                int age = rs.getInt("age");
+                System.out.println(name + " age = " + age);
+
+            }
+
             System.out.println("Database Connection Success");
 
         } catch (SQLException | ClassNotFoundException ex) {
