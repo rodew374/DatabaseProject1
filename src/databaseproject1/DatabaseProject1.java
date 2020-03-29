@@ -14,6 +14,8 @@ public class DatabaseProject1 {
         printData("users");
         printData("users2");
 
+        pro.createTable("users3");
+
     }
 
     static void printData(String table) throws SQLException {
@@ -38,6 +40,7 @@ public class DatabaseProject1 {
 
         }
 
+        System.out.println();
         stmt.close();
     }
 
@@ -47,12 +50,34 @@ public class DatabaseProject1 {
             Class.forName("com.mysql.cj.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "7@AyCXG3");
 
-            System.out.println("Database Connection Success");
+            System.out.println("Database Connection Success\n");
 
         } catch (SQLException | ClassNotFoundException ex) {
             Logger.getLogger(DatabaseProject1.class.getName()).log(Level.SEVERE, null, ex);
 
         }
 
+    }
+
+    void createTable(String tableName) {
+
+        String q = "CREATE TABLE "
+                + tableName
+                + "("
+                + "name varchar(100),"
+                + "age int,"
+                + "salary float"
+                + ");";
+        try {
+            Statement stmt = con.createStatement();
+            stmt.execute(q);
+
+            System.out.println("Table Sucessfully Created");
+            stmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
     }
 }
