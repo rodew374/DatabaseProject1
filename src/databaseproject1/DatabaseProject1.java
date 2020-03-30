@@ -19,6 +19,7 @@ public class DatabaseProject1 {
 //      pro.createTable("users3");
 //      pro.addBatch();
         pro.callableExample();
+        pro.olderThan(50);
 
     }
 
@@ -73,8 +74,8 @@ public class DatabaseProject1 {
 /*  This method prints the name of all users in the table 'USERS2'
  */
     private void callableExample() {
-        Boolean hasResult;
         CallableStatement stmt;
+        Boolean hasResult;
         ResultSet rs;
 
         try {
@@ -90,6 +91,7 @@ public class DatabaseProject1 {
                 }
             }
 
+            System.out.println();
             stmt.close();
 
         } catch (SQLException e) {
@@ -134,6 +136,33 @@ public class DatabaseProject1 {
         } catch (SQLException e) {
             e.printStackTrace();
 
+        }
+    }
+
+    private void olderThan(int age) {
+        Boolean hasResult;
+        CallableStatement stmt;
+        ResultSet rs;
+
+        try {
+            stmt = con.prepareCall("{call olderThan(?)}");
+            stmt.setInt(1, age);
+            hasResult = stmt.execute();
+
+            if(hasResult) {
+                rs = stmt.getResultSet();
+
+                while(rs.next()) {
+                    System.out.println(rs.getString("name"));
+
+                }
+            }
+
+            System.out.println();
+            stmt.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
