@@ -20,6 +20,7 @@ public class DatabaseProject1 {
 //      pro.addBatch();
         pro.callableExample();
         pro.olderThan(50);
+        pro.countOlder(50);
 
     }
 
@@ -137,6 +138,36 @@ public class DatabaseProject1 {
             e.printStackTrace();
 
         }
+    }
+
+    private int countOlder(int age) {
+        Boolean hasResult;
+        CallableStatement stmt;
+        int count;
+        ResultSet rs;
+
+        count = -1;
+
+        try {
+            stmt = con.prepareCall("{call countOlder(?, ?)}");
+            stmt.setInt(1, age);
+            stmt.registerOutParameter(2, java.sql.Types.INTEGER);
+            hasResult = stmt.execute();
+
+            if(hasResult) {
+                count = stmt.getInt(2);
+
+                System.out.println(count + " results");
+
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+
+        return count;
+
     }
 
     private void olderThan(int age) {
