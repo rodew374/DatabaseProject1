@@ -52,7 +52,9 @@ public class DB2 extends javax.swing.JFrame {
     }
 
     public static void main(String[] args) {
-        JFrame frame = new JFrame("DB2");
+        JFrame frame;
+
+        frame = new JFrame("DB2");
         frame.setContentPane(new DB2().DB2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
@@ -76,11 +78,15 @@ public class DB2 extends javax.swing.JFrame {
     }
 
     private void delete(ActionEvent e) {
-        int row = table.getSelectedRow();
-        String name = table.getValueAt(row,0).toString();
+        int row;
+        PreparedStatement stmt;
+        String name;
+
+        row = table.getSelectedRow();
+        name = table.getValueAt(row,0).toString();
 
         try {
-            PreparedStatement stmt = con.prepareStatement("DELETE FROM USERS2 WHERE NAME=?");
+            stmt = con.prepareStatement("DELETE FROM USERS2 WHERE NAME=?");
             stmt.setString(1, name);
 
             stmt.executeUpdate();
@@ -111,11 +117,15 @@ public class DB2 extends javax.swing.JFrame {
     }
 
     private void insert(ActionEvent e) {
-        String name = input.getText();
-        int age = Integer.parseInt(ageInput.getText());
+        int age;
+        PreparedStatement stmt;
+        String name;
+
+        name = input.getText();
+        age = Integer.parseInt(ageInput.getText());
 
         try {
-            PreparedStatement stmt = con.prepareStatement("INSERT INTO USERS2 VALUES(?, ?)");
+            stmt = con.prepareStatement("INSERT INTO USERS2 VALUES(?, ?)");
             stmt.setString(1, name);
             stmt.setInt(2, age);
 
@@ -132,17 +142,23 @@ public class DB2 extends javax.swing.JFrame {
     }
 
     private void refresh(ActionEvent e) {
-        DefaultTableModel tableModel = new DefaultTableModel();
+        DefaultTableModel tableModel;
+        Statement stmt;
+        ResultSet rs;
 
+        tableModel = new DefaultTableModel();
         tableModel.setColumnIdentifiers(new Object[]{"Name", "Age"});
 
         try {
-            Statement stmt = con.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT * FROM USERS2");
+            stmt = con.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM USERS2");
 
             while (rs.next()) {
-                String name = rs.getString("name");
-                int age = rs.getInt("age");
+                int age;
+                String name;
+
+                name = rs.getString("name");
+                age = rs.getInt("age");
 
                 tableModel.addRow(new Object[]{name, age});
 
@@ -159,9 +175,10 @@ public class DB2 extends javax.swing.JFrame {
     }
 
     private void update(ActionEvent e) {
+        PreparedStatement stmt;
 
         try {
-            PreparedStatement stmt = con.prepareStatement("UPDATE USERS2 SET AGE = ? WHERE NAME = ?");
+            stmt = con.prepareStatement("UPDATE USERS2 SET AGE = ? WHERE NAME = ?");
             stmt.setInt(1, Integer.parseInt(editAge.getText()));
             stmt.setString(2, editName.getText());
 
