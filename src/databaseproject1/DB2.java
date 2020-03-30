@@ -20,27 +20,34 @@ public class DB2 extends javax.swing.JFrame {
     private JScrollPane dataPane;
     private JButton refreshButton;
     private JPanel refreshPane;
+    private JButton editButton;
+    private JPanel editPane;
+    private JPanel spacerRight;
+    private JPanel spacerLeft;
+    private JPanel spacerTop;
+    private JPanel editAgePane;
+    private JPanel editNamePane;
+    private JTextField editAge;
+    private JTextField editName;
+    private JPanel updatePane;
+    private JButton updateButton;
+    private JPanel deletePane;
+    private JPanel spacerBottom;
+    private JPanel spacerTableLower;
+    private JPanel spacerTableUpper;
+    private JButton deleteButton;
     Connection con;
 
     public DB2() {
         createConnection();
 
+        deleteButton.addActionListener(this::delete);
+        editButton.addActionListener(this::edit);
         insertPleaseButton.addActionListener(this::insert);
         refreshButton.addActionListener(this::refresh);
-    }
+        updateButton.addActionListener(this::update);
 
-    void createConnection() {
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "7@AyCXG3");
-
-            System.out.println("Database Connection Success");
-
-        } catch (SQLException | ClassNotFoundException ex) {
-            Logger.getLogger(DatabaseProject1.class.getName()).log(Level.SEVERE, null, ex);
-
-        }
+        refreshButton.doClick();
 
     }
 
@@ -49,7 +56,58 @@ public class DB2 extends javax.swing.JFrame {
         frame.setContentPane(new DB2().DB2);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.pack();
+        frame.setLocationRelativeTo(null);
         frame.setVisible(true);
+    }
+
+    private void createConnection() {
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/mydb", "root", "7@AyCXG3");
+
+            System.out.println("Database Connection Success\n");
+
+        } catch (SQLException | ClassNotFoundException ex) {
+            Logger.getLogger(DatabaseProject1.class.getName()).log(Level.SEVERE, null, ex);
+
+        }
+
+    }
+
+    private void delete(ActionEvent e) {
+        int row = table.getSelectedRow();
+        String name = table.getValueAt(row,0).toString();
+
+        try {
+            PreparedStatement stmt = con.prepareStatement("DELETE FROM USERS2 WHERE NAME=?");
+            stmt.setString(1, name);
+
+            stmt.executeUpdate();
+            refreshButton.doClick();
+            System.out.println("Deletion Completed\n");
+
+            stmt.close();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+
+        }
+    }
+
+    private void edit(ActionEvent e) {
+        DefaultTableModel model;
+        int row;
+        String name, age;
+
+        model = (DefaultTableModel) table.getModel();
+        row = table.getSelectedRow();
+        name = (String) model.getValueAt(row, 0);
+        age = model.getValueAt(row, 1).toString();
+
+        editName.setText(name);
+        editAge.setText(age);
+
     }
 
     private void insert(ActionEvent e) {
@@ -62,7 +120,9 @@ public class DB2 extends javax.swing.JFrame {
             stmt.setInt(2, age);
 
             stmt.execute();
-            System.out.println("Insertion Completed");
+            refreshButton.doClick();
+            System.out.println("Insertion Completed\n");
+
             stmt.close();
 
         } catch (SQLException ex) {
@@ -84,18 +144,37 @@ public class DB2 extends javax.swing.JFrame {
                 String name = rs.getString("name");
                 int age = rs.getInt("age");
 
-                System.out.println(name + " age = " + age);
-
                 tableModel.addRow(new Object[]{name, age});
 
             }
 
-            table.setModel(tableModel);
+           table.setModel(tableModel);
+
             stmt.close();
 
         } catch (SQLException ex) {
             ex.printStackTrace();
 
         }
+    }
+
+    private void update(ActionEvent e) {
+
+        try {
+            PreparedStatement stmt = con.prepareStatement("UPDATE USERS2 SET AGE = ? WHERE NAME = ?");
+            stmt.setInt(1, Integer.parseInt(editAge.getText()));
+            stmt.setString(2, editName.getText());
+
+            stmt.executeUpdate();
+            refreshButton.doClick();
+            System.out.println("Update Completed\n");
+
+            stmt.close();
+
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+
+        }
+
     }
 }
